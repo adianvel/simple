@@ -113,10 +113,65 @@
 
 .site-social-icon {
   display: block;
+  transform-origin: center;
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.site-social-link {
+  display: inline-flex;
+  animation: footer-social-float 3.8s ease-in-out infinite;
+}
+
+.site-social-link:nth-child(2) {
+  animation-delay: -1.25s;
+}
+
+.site-social-link:nth-child(3) {
+  animation-delay: -2.5s;
+}
+
+@keyframes footer-social-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+
+  50% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-social-link:hover .site-social-icon {
+    transform: scale(1.1) rotate(-8deg);
+  }
+
+  .site-social-link:nth-child(2):hover .site-social-icon {
+    transform: scale(1.1) rotate(8deg);
+  }
+}
+
+.site-social-link:active .site-social-icon {
+  transform: scale(0.94);
 }
 
 :root.light .site-social-icon {
   filter: invert(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-social-link {
+    animation: none;
+  }
+
+  .site-social-icon {
+    transition: none;
+  }
+
+  .site-social-link:hover .site-social-icon,
+  .site-social-link:active .site-social-icon {
+    transform: none;
+  }
 }
 
 .site-brand-mark {

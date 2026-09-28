@@ -26,7 +26,7 @@ export default function Footer() {
               target="_blank"
               rel="noreferrer"
               aria-label={label}
-              className="transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              className="site-social-link transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
               key={label}
             >
               <img className="site-social-icon" src={icon} width={24} height={24} alt="" aria-hidden="true" />
