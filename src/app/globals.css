@@ -113,46 +113,56 @@
 
 .site-social-icon {
   display: block;
-  transform-origin: center;
-  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.site-social-link {
-  display: inline-flex;
-  animation: footer-social-float 3.8s ease-in-out infinite;
+.footer-brand-tiles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
 }
 
-.site-social-link:nth-child(2) {
-  animation-delay: -1.25s;
+.footer-brand-tile {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  border-radius: 11px;
+  background: #fff;
+  animation: footer-brand-float 3.8s ease-in-out infinite;
 }
 
-.site-social-link:nth-child(3) {
-  animation-delay: -2.5s;
+.footer-brand-tile img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
-@keyframes footer-social-float {
+.footer-brand-tile:nth-child(2) {
+  animation-delay: -0.95s;
+}
+
+.footer-brand-tile:nth-child(3) {
+  animation-delay: -1.9s;
+}
+
+.footer-brand-tile:nth-child(4) {
+  animation-delay: -2.85s;
+}
+
+@keyframes footer-brand-float {
   0%,
   100% {
     transform: translateY(0) rotate(-2deg);
   }
 
   50% {
-    transform: translateY(-3px) rotate(2deg);
+    transform: translateY(-4px) rotate(2deg);
   }
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .site-social-link:hover .site-social-icon {
-    transform: scale(1.1) rotate(-8deg);
-  }
-
-  .site-social-link:nth-child(2):hover .site-social-icon {
-    transform: scale(1.1) rotate(8deg);
-  }
-}
-
-.site-social-link:active .site-social-icon {
-  transform: scale(0.94);
 }
 
 :root.light .site-social-icon {
@@ -160,17 +170,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .site-social-link {
+  .footer-brand-tile {
     animation: none;
-  }
-
-  .site-social-icon {
-    transition: none;
-  }
-
-  .site-social-link:hover .site-social-icon,
-  .site-social-link:active .site-social-icon {
-    transform: none;
   }
 }
 

@@ -3,6 +3,7 @@ const socialLinks = [
   { label: "X", href: "https://x.com/0xadianvel", icon: "/portfolio/icons/x.svg" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/adiansyah/", icon: "/portfolio/icons/linkedin.svg" },
 ];
+const featuredBrands = ["vercel", "notion", "slack", "figma"];
 
 export default function Footer() {
   return (
@@ -13,6 +14,14 @@ export default function Footer() {
         </p>
         <cite className="self-end text-base leading-6 not-italic">— Carl Jung</cite>
       </blockquote>
+
+      <div className="footer-brand-tiles" aria-hidden="true">
+        {featuredBrands.map((brand) => (
+          <span className="footer-brand-tile" key={brand}>
+            <img src={`/portfolio/icons/brand-tiles/${brand}.png`} width={32} height={32} alt="" />
+          </span>
+        ))}
+      </div>
 
       <footer className="flex w-full items-center justify-between py-8 text-neutral-700">
         <div className="flex items-center gap-2">
@@ -26,7 +35,7 @@ export default function Footer() {
               target="_blank"
               rel="noreferrer"
               aria-label={label}
-              className="site-social-link transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              className="transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
               key={label}
             >
               <img className="site-social-icon" src={icon} width={24} height={24} alt="" aria-hidden="true" />
