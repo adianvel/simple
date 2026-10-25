@@ -360,18 +360,34 @@ function setup(
   };
 
   const stop = () => {
+    // A held tile keeps following the cursor while the page scrolls, so keep
+    // the loop alive until the drag ends (releaseDrag stops it if needed).
+    if (dragging) return;
     running = false;
     cancelAnimationFrame(raf);
+    cancelHover();
+    // The canvas extends FLIGHT_ROOM above the pile, which can still be on
+    // screen after the pile scrolls away. Drop that overlay so thrown tiles
+    // do not stay frozen over the page content.
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, FLIGHT_ROOM * dpr);
   };
 
+  let visible = true;
+
+  // Watch the tall render canvas rather than the pile box: a thrown tile flies
+  // through the FLIGHT_ROOM overlay above the pile, and stopping as soon as the
+  // pile itself leaves the viewport froze that tile mid-air while it was still
+  // on screen. The loop should only rest once none of its canvas is visible.
   const intObserver = new IntersectionObserver(
     ([entry]) => {
-      if (entry.isIntersecting) start();
+      visible = entry.isIntersecting;
+      if (visible) start();
       else if (started) stop();
     },
-    { threshold: 0.15 },
+    { threshold: 0 },
   );
-  intObserver.observe(container);
+  intObserver.observe(canvas);
 
   const resizeObserver = new ResizeObserver(() => {
     sizeCanvas();
@@ -451,15 +467,33 @@ function setup(
   // The input canvas only covers the pile, so a drag that leaves it (e.g. to
   // throw a tile above the quote) would stop tracking. Follow the pointer
   // globally while the button is held.
-  const trackDrag = (event: PointerEvent) => {
-    if (!dragging && mouse.button !== 0) return;
+  const pointer = { x: 0, y: 0 };
+
+  const syncMouse = () => {
     const rect = inputCanvas.getBoundingClientRect();
-    mouse.absolute.x = event.clientX - rect.left;
-    mouse.absolute.y = event.clientY - rect.top;
+    mouse.absolute.x = pointer.x - rect.left;
+    mouse.absolute.y = pointer.y - rect.top;
     mouse.position.x = mouse.absolute.x * mouse.scale.x + mouse.offset.x;
     mouse.position.y = mouse.absolute.y * mouse.scale.y + mouse.offset.y;
   };
+
+  const trackDrag = (event: PointerEvent) => {
+    if (!dragging && mouse.button !== 0) return;
+    pointer.x = event.clientX;
+    pointer.y = event.clientY;
+    syncMouse();
+  };
+
+  // Wheel scrolling fires no pointer events, so a held tile would keep
+  // chasing a stale world point and drift away from the cursor.
+  const onScroll = () => {
+    cancelHover();
+    if (!dragging && mouse.button !== 0) return;
+    syncMouse();
+  };
+
   window.addEventListener("pointermove", trackDrag);
+  window.addEventListener("scroll", onScroll, { passive: true });
 
   if (!reducedMotion) {
     inputCanvas.addEventListener("pointermove", onPointerMove);
@@ -481,6 +515,7 @@ function setup(
   });
   Matter.Events.on(mouseConstraint, "enddrag", () => {
     dragging = false;
+    if (!visible) stop();
   });
 
   // Matter only listens for mouseup on the canvas, so releasing a dragged tile
@@ -489,6 +524,7 @@ function setup(
     mouse.button = -1;
     dragging = false;
     cancelHover();
+    if (!visible) stop();
   };
   window.addEventListener("mouseup", releaseDrag);
   window.addEventListener("pointerup", releaseDrag);
@@ -520,6 +556,7 @@ function setup(
   }
 
   return () => {
+    dragging = false;
     stop();
     cancelHover();
     intObserver.disconnect();
@@ -528,6 +565,7 @@ function setup(
     inputCanvas.removeEventListener("pointerdown", onPointerDown);
     inputCanvas.removeEventListener("pointerleave", onPointerLeave);
     window.removeEventListener("pointermove", trackDrag);
+    window.removeEventListener("scroll", onScroll);
     window.removeEventListener("mouseup", releaseDrag);
     window.removeEventListener("pointerup", releaseDrag);
     window.removeEventListener("blur", releaseDrag);
