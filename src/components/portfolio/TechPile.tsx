@@ -74,6 +74,7 @@ type PileBody = {
   item: PileIcon;
   body: Matter.Body;
   inWorld: boolean;
+  seen: boolean;
   thrown: boolean;
   thrownAt: number;
 };
@@ -82,7 +83,7 @@ const STEP = 1000 / 60;
 const TILE_MIN = 22;
 const MOBILE_TILE_MIN = 30;
 const TILE_MAX = 46;
-const FLIGHT_ROOM = 420;
+const FLIGHT_ROOM = 520;
 const HOVER_DELAY = 150;
 const THROW_COOLDOWN = 900;
 
@@ -299,7 +300,11 @@ function setup(
       const tile = prepared.get(entry.item.icon)?.tile;
       if (!tile) continue;
       const { position, angle } = entry.body;
-      if (!entry.thrown && position.y < 0) continue;
+      // Only the initial rain is hidden above the pile. Once a tile has
+      // entered the pile it stays drawn even if a collision flings it back
+      // above y=0, otherwise neighbours of a thrown tile vanish mid-air.
+      if (position.y >= 0) entry.seen = true;
+      if (!entry.seen && !entry.thrown) continue;
       const cos = Math.cos(angle);
       const sin = Math.sin(angle);
       ctx.setTransform(dpr * cos, dpr * sin, -dpr * sin, dpr * cos, dpr * position.x, dpr * (position.y + FLIGHT_ROOM));
@@ -491,7 +496,14 @@ function setup(
 
   PILE_ICONS.forEach((item, index) => {
     prepare(item);
-    bodies.push({ item, body: makeBody(item, index), inWorld: false, thrown: false, thrownAt: 0 });
+    bodies.push({
+      item,
+      body: makeBody(item, index),
+      inWorld: false,
+      seen: false,
+      thrown: false,
+      thrownAt: 0,
+    });
   });
 
   if (reducedMotion) {
