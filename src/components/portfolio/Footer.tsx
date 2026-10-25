@@ -1,9 +1,10 @@
+import TechPile from "./TechPile";
+
 const socialLinks = [
   { label: "GitHub", href: "https://github.com/adianvel", icon: "/portfolio/icons/github.svg" },
   { label: "X", href: "https://x.com/0xadianvel", icon: "/portfolio/icons/x.svg" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/adiansyah/", icon: "/portfolio/icons/linkedin.svg" },
 ];
-const featuredBrands = ["vercel", "notion", "slack", "figma"];
 
 export default function Footer() {
   return (
@@ -15,13 +16,7 @@ export default function Footer() {
         <cite className="self-end text-base leading-6 not-italic">— Carl Jung</cite>
       </blockquote>
 
-      <div className="footer-brand-tiles" aria-hidden="true">
-        {featuredBrands.map((brand) => (
-          <span className="footer-brand-tile" key={brand}>
-            <img src={`/portfolio/icons/brand-tiles/${brand}.png`} width={32} height={32} alt="" />
-          </span>
-        ))}
-      </div>
+      <TechPile />
 
       <footer className="flex w-full items-center justify-between py-8 text-neutral-700">
         <div className="flex items-center gap-2">
