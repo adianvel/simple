@@ -8,9 +8,15 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  // suppressHydrationWarning covers <html> and <body> only: the Bitdefender
+  // extension injects attributes (bis_skin_checked, __processed_*) into them
+  // before React hydrates. Content mismatches in children are still reported.
   return (
-    <html lang="en" className="dark h-full antialiased">
-      <body className="relative min-h-full flex flex-col">{children}</body>
+    <html lang="en" className="dark h-full antialiased" suppressHydrationWarning>
+      <body
+        className="relative min-h-full flex flex-col"
+        suppressHydrationWarning
+      >{children}</body>
     </html>
   );
 }
